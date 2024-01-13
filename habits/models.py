@@ -55,11 +55,15 @@ class Habit(models.Model):
             ValidationError: В случае нарушения валидации.
 
         """
-        if self.related_habit and self.is_pleasurable:
-            raise ValidationError(_('Приятные привычки не могут иметь связанную привычку.'))
+        if self.time_execution_seconds > 120:
+            raise ValidationError(_('Время выполнения привычки не должно превышать 120 секунд.'))
 
-        if self.frequency_days and self.frequency_days < 7:
-            raise ValidationError(_('Частота должна быть не менее одного раза в 7 дней.'))
+        if self.is_pleasurable and (self.is_rewarded or self.related_habit):
+            raise ValidationError(_('Приятная привычка не может иметь вознаграждения или связанной привычки.'))
+
+
+        if self.frequency_days < 7:
+            raise ValidationError(_('Привычку нельзя выполнять реже, чем 1 раз в 7 дней.'))
 
         super().clean()
 

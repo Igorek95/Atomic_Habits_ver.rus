@@ -22,6 +22,9 @@ class UserUpdateAPIView(generics.UpdateAPIView):
     def get_object(self):
         return self.request.user
 
+    def perform_update(self, serializer):
+        serializer.save(telegram_chat_id=self.request.data.get('telegram_chat_id', None))
+
 
 class UserDestroyAPIView(generics.DestroyAPIView):
     serializer_class = UserSerializerPrivateUpdate
