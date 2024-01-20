@@ -3,6 +3,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .validators import (
+    TimeToDoLess120Validator,
+    NiceHabitNoRewardValidator,
+    PeriodWeeklyOrLessValidator,
+)
+from .tasks import send_scheduled_notifications
 
 class Habit(models.Model):
     """
@@ -55,17 +61,20 @@ class Habit(models.Model):
             ValidationError: В случае нарушения валидации.
 
         """
-        if self.time_execution_seconds > 120:
-            raise ValidationError(_('Время выполнения привычки не должно превышать 120 секунд.'))
-
-        if self.is_pleasurable and (self.is_rewarded or self.related_habit):
-            raise ValidationError(_('Приятная привычка не может иметь вознаграждения или связанной привычки.'))
-
-
-        if self.frequency_days < 7:
-            raise ValidationError(_('Привычку нельзя выполнять реже, чем 1 раз в 7 дней.'))
+        TimeToDoLess120Validator('time')(self.__dict__)
+        NiceHabitNoRewardValidator('is_pleasurable', 'related_habit', 'is_rewarded')(self.__dict__)
+        PeriodWeeklyOrLessValidator('frequency_days')(self.__dict__)
 
         super().clean()
+
+    def schedule_notification_task(self):
+        """
+        Запускает таск на отправку уведомления по расписанию.
+
+        Returns:
+            None
+        """
+        send_scheduled_notifications.apply_async(args=[self.id], countdown=1)  # Запуск через 1 секунду
 
 
 class Action(models.Model):

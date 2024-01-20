@@ -50,7 +50,7 @@
     python -m venv venv
     source venv/bin/activate  # для Linux / macOS
     .\venv\Scripts\activate  # для Windows
-    pip install -r requirements.txt
+    pip install -r r.txt
     ```
 
 3. Примените миграции:

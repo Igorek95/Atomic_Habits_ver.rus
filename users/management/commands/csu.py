@@ -6,12 +6,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         user = User.objects.create(
-            email='admin@gmail.com',
+            email='admin@mail.ru',
             first_name='admin',
             last_name='admin',
             is_active=True,
             is_staff=True,
             is_superuser=True,
+            telegram_chat_id="1391984681"
         )
 
         user.set_password('admin')

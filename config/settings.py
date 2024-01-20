@@ -197,16 +197,19 @@ if DEBUG:
 
 stripe.api_key = os.getenv('STRIPE_API')
 
-### Celery ###
-# URL-адрес брокера сообщений
+# Настройки Celery
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-# URL-адрес брокера результатов, также Redis
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
-# Часовой пояс для работы Celery
 CELERY_TIMEZONE = os.getenv('CELERY_TIMEZONE')
-# Флаг отслеживания выполнения задач
 CELERY_TASK_TRACK_STARTED = os.getenv('CELERY_TASK_TRACK_STARTED') == 'True'
-# Максимальное время на выполнение задачи
 CELERY_TASK_TIME_LIMIT = 30 * 60
+
+# Настройки Celery Beat
+CELERY_BEAT_SCHEDULE = {
+    'send-scheduled-notifications': {
+        'task': 'habits.tasks.send_scheduled_notifications',
+        'schedule': timedelta(minutes=1),  # укажите интервал в соответствии с вашими требованиями
+    },
+}
 
 bot_token = os.getenv('bot_token')

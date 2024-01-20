@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from rest_framework import generics
@@ -116,6 +115,10 @@ def habit_pre_delete(sender, instance, **kwargs):
     check_habit_deletion(instance)
 
 
+from datetime import datetime
+from django.template import Template, Context
+
+
 def check_habit_time(habit):
     """
     Проверяет, наступило ли время выполнения привычки, и отправляет уведомление, если это так.
@@ -128,8 +131,14 @@ def check_habit_time(habit):
     """
     current_time = datetime.now().time()
     habit_time = datetime.strptime(habit.time, '%H:%M').time()
+
     if current_time >= habit_time:
-        send_notification(chat_id=habit.user.telegram_chat_id, text="Время выполнить привычку!")
+        template_text = "Я буду {{ action }} в {{ time }} в {{ place }}"
+        template = Template(template_text)
+        context = Context({'action': habit.action, 'time': habit.time, 'place': habit.place})
+        formatted_text = template.render(context)
+
+        send_notification(chat_id=habit.user.telegram_chat_id, text=formatted_text)
 
 
 def check_habit_deletion(habit):
