@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGUSER=${DB_USER}
+    volumes:
+      - ./pddata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis
+
+  api:
+    build: .
+    tty: true
+    command: sh -c "python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/django
+    restart: on-failure
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    healthcheck:
+      test: "curl --fail  http://127.0.0.1:8000/swagger/"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      db:
+        condition: service_healthy
+
+  celery:
+    build: .
+    tty: true
+    command: celery -A config worker -l INFO --hostname redis
+    depends_on:
+      api:
+        condition: service_healthy
+
+  celery_beat:
+    build: .
+    tty: true
+    command: celery -A config beat -l INFO -S django
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pddata:

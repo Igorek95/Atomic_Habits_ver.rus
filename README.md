@@ -50,7 +50,7 @@
     python -m venv venv
     source venv/bin/activate  # для Linux / macOS
     .\venv\Scripts\activate  # для Windows
-    pip install -r r.txt
+    pip install -r requirements.txt
     ```
 
 3. Примените миграции:
@@ -66,3 +66,9 @@
     ```
 
 5. Перейдите по адресу http://localhost:8000/ в вашем веб-браузере.
+
+## Запуск контейнеров через docker-compose  
+1. Клонируйте репозиторий -->   git clone https://github.com/Igorek95/atomic-habits-tracker.git
+2. Переименуйте .env.tpl в .env и настройте параметры.  
+3. Запуск построение и запуск контейнеров --> `docker-compose up`
+4. Перейдите по адресу http://localhost:8001/swagger/ или http://localhost:8001/redoc/ для вывода документации.

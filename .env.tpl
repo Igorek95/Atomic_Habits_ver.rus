@@ -18,8 +18,8 @@ CACHE_ENABLED=True  # или False, если кэш не используетс�
 CACHE_LOCATION=your_cache_location  # например, 'localhost:11211'
 
 STRIPE_API=your_stripe_api_key
-CELERY_BROKER_URL=redis://localhost:6379/0
-CELERY_RESULT_BACKEND=redis://localhost:6379/0
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
 CELERY_TIMEZONE=your_timezone  # например, 'Europe/Moscow'
 CELERY_TASK_TRACK_STARTED=True
 
