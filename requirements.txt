@@ -21,6 +21,7 @@ sqlparse
 stripe
 coverage
 python-telegram-bot
-celery
 aiogram
+
+redis
 
